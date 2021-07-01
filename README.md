@@ -14,13 +14,13 @@ ABAP Unit Tests : [iBS Workshop](https://www.ibs-banking.com/de/)
 
 # Namenskonvention
 
-Quelltexte zum Beisliel werden un *.txt* Dateien gespeichert.
-Die Dateien in dieser Repo werden nach folgender Konvention benant: <br>
+Quelltexte zum Beispiel werden und *.txt* Dateien gespeichert.
+Die Dateien in dieser Repo werden nach folgender Konvention benannt: <br>
 
     <entity_name>_<suffix>.txt
 
-***entity_name*** : name der Entität aus dem Klassendiagramm <br>
-***sufix*** : Kürzel der Namen der ***Reiter im Eclipse***: <br>
+***entity_name*** : Name der Entität aus dem Klassendiagramm <br>
+***suffix*** : Kürzel der Namen der ***Reiter im Eclipse***: <br>
 
 ![Namenskonvention](/img/naming_convention.png)
 * TC - Test Classes
