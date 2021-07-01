@@ -1,0 +1,145 @@
+"! Darlehen - Loan
+CLASS <replace>_cl_loan DEFINITION
+  PUBLIC
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+
+    "! Ein Objelk wir nur erstellt wenn <strong>validate_bp</strong>
+    "! entscheiden, dass ein gültiges Objekt der Partnerklasse
+    "! übergeben wird.( komposition zur Partnerklasse)
+    "!
+    "! @parameter im_business_date | aktuelles Bestandsdatum
+    "! @parameter im_contract_number | Darlehensnummer
+    "! @parameter im_bp_id | Geschäftspartner ID
+    "! @parameter im_obj_bp | Geschäftspartner
+    "! @parameter im_company_code | Buchungskreis
+    "! @parameter im_porduct_category | Anlageform
+    "! @parameter im_product_type | Produktart
+    "! @parameter im_amount | Vertragskapital
+    "! @raising cx_static_check | Validierung des Parterobjektes schiefgelaufen
+    METHODS constructor
+      IMPORTING
+                im_business_date    TYPE dats
+                im_contract_number  TYPE char13
+                im_bp_id            TYPE char10
+                im_obj_bp           TYPE REF TO <replace>_if_bp_general
+                im_company_code     TYPE char4
+                im_porduct_category TYPE n
+                im_product_type     TYPE numc3
+                im_amount           TYPE d
+      RAISING   cx_static_check.
+
+    "! Fügt Cash Flows zum Darlehen
+    "! @parameter im_obj_cf | Cash Floew Objekt
+    METHODS add_obj_cf IMPORTING im_obj_cf TYPE REF TO <replace>_if_cf_general.
+
+    "! Summe aller CashFlow Beträge die zum Datum <strong>im_date</strong>
+    "! passen.
+    "! @parameter im_date | Stichtag
+    "! @parameter re_sum_amount | Summe aller Beträge
+    METHODS get_cf_sum_by_date
+      IMPORTING im_date              TYPE dats
+      RETURNING VALUE(re_sum_amount) TYPE d.
+
+    "! Summe aller CashFlow Beträge die zum Typ <strong>im_type</strong>
+    "! passen.
+    "! @parameter im_type | Cash Flow Typ
+    "! @parameter re_sum_amount | Summe aller Beträge
+    METHODS get_cf_sum_by_type
+      IMPORTING im_type              TYPE char5
+      RETURNING VALUE(re_sum_amount) TYPE d.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    "! aktuelles Bestandsdatum
+    DATA _business_date TYPE dats.
+    "! Darlehensnummer (RANL)
+    DATA _contract_number(13)   TYPE c.
+    "! Geschäftspartner
+    DATA _obj_bp TYPE REF TO <replace>_if_bp_general.
+    "! alle Bewegungen zum Darlehen
+    DATA _tab_cashflows TYPE lty_cash_flows.
+    "! Buchungskreis (BUKRS)
+    DATA _company_code(4) TYPE c.
+    "! Anlageform (SANLF)
+    DATA _porduct_category(3) TYPE n.
+    "! Produktart (GSART)
+    DATA _product_type(3) TYPE c.
+    "! Vertragskapital
+    DATA _amount TYPE d.
+
+    "! Prüft ob die ID im <strong>im_obj_bp</strong> mit der ID im <strong>im_bp_id</strong>
+    "! übereinstimmt. Wenn nicht wir die Ausnahme <strong><em>bp_not_valid</em></strong>
+    "! ausgelöst.
+    "! @parameter im_obj_bp | Pertnerobjekt - wird geprüft
+    "! @parameter im_bp_id | ID aus der DB
+    "! @parameter re_result | TRUE wenn alles OK
+    "! @raising cx_static_check | wen die IDs nicht gleich sind
+    METHODS validate_bp IMPORTING im_obj_bp        TYPE REF TO <replace>_if_bp_general
+                                  im_bp_id         TYPE char10
+                        RETURNING VALUE(re_result) TYPE abap_bool
+                        RAISING   cx_static_check.
+ENDCLASS.
+
+
+
+CLASS <replace>_cl_loan IMPLEMENTATION.
+
+  METHOD constructor.
+
+    IF me->validate_bp( im_obj_bp = im_obj_bp im_bp_id  = im_bp_id ).
+      " Kompositionsbeziehing - "starke Bindung"
+      me->_obj_bp = im_obj_bp.
+    ELSE.
+      RAISE EXCEPTION TYPE <replace>_cx_loan
+        EXPORTING
+          textid = <replace>_cx_loan=>bp_not_valid.
+    ENDIF.
+
+    me->_business_date    = im_business_date.
+    me->_contract_number  = im_contract_number.
+    me->_company_code     = im_company_code.
+    me->_porduct_category = im_porduct_category.
+    me->_product_type     = im_product_type.
+    me->_amount           = im_amount.
+
+  ENDMETHOD.
+
+  METHOD validate_bp.
+
+    IF im_bp_id EQ im_obj_bp->get_bp_id( ).
+      re_result = abap_true.
+      RETURN.
+    ENDIF.
+
+    re_result = abap_false.
+
+  ENDMETHOD.
+
+  METHOD add_obj_cf.
+    APPEND im_obj_cf TO me->_tab_cashflows.
+  ENDMETHOD.
+
+
+  METHOD get_cf_sum_by_date.
+
+    LOOP AT me->_tab_cashflows ASSIGNING FIELD-SYMBOL(<obj>).
+      IF im_date EQ <obj>->get_business_date( ).
+        re_sum_amount = re_sum_amount + <obj>->get_amount( ).
+      ENDIF.
+    ENDLOOP.
+
+  ENDMETHOD.
+
+  METHOD get_cf_sum_by_type.
+
+    LOOP AT me->_tab_cashflows ASSIGNING FIELD-SYMBOL(<obj>).
+      IF im_type EQ <obj>->get_type( ).
+        re_sum_amount = re_sum_amount + <obj>->get_amount( ).
+      ENDIF.
+    ENDLOOP.
+
+  ENDMETHOD.
+
+ENDCLASS.

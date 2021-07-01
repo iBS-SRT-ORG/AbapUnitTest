@@ -1,0 +1,51 @@
+"! Geschäftspartner - BusinessPartner
+CLASS <replace>_cl_business_partner DEFINITION
+  PUBLIC
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES <replace>_if_bp_general.
+
+    ALIASES get_bp_if        FOR <replace>_if_bp_general~get_bp_id.
+    ALIASES get_full_address FOR <replace>_if_bp_general~get_full_address.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+
+    "! Geschäftspartner ID
+    DATA _id_business_partner(10) TYPE c.
+    "! Institut
+    DATA _institute(3) TYPE c.
+    "! Vorname
+    DATA _name_1(20) TYPE c.
+    "! Naschname
+    DATA _name_2(40) TYPE c.
+    "! Länderschlüssel
+    DATA _country_key(3) TYPE c.
+    "! Stadt
+    DATA _city(40) TYPE c.
+    "! Starassse
+    DATA _street(60) TYPE c.
+    "! Postleitzahl
+    DATA _postal_code(10) TYPE c.
+    "! Steuernummer
+    DATA _tax_number(13) TYPE c.
+    "! LEI
+    DATA _legal_entity_id(20) TYPE c.
+
+
+ENDCLASS.
+
+
+
+CLASS <replace>_cl_business_partner IMPLEMENTATION.
+
+  METHOD <replace>_if_bp_general~get_bp_id.
+    re_bp_id = me->_id_business_partner.
+  ENDMETHOD.
+
+  METHOD <replace>_if_bp_general~get_full_address.
+    re_full_address = |{ me->_name_1 }' '{ me->_name_2 },{ me->_street },{ me->_postal_code },{ me->_city },{ me->_country_key } |.
+  ENDMETHOD.
+
+ENDCLASS.

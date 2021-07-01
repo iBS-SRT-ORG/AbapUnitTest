@@ -1,0 +1,12 @@
+"! Allgemeine Geschäftspartnerdaten - IBusinessPartner
+INTERFACE <replace>_if_bp_general
+  PUBLIC .
+
+  "! Partnernummer
+  METHODS get_bp_id RETURNING VALUE(re_bp_id) TYPE char10.
+  "! komplette Adresse
+  "! <strong>Vorname</strong> <strong>Nachname</strong>,<strong>Strasse</strong>,
+  "! <strong>Postlietzahl</strong>,<strong>Stadt</strong>, <strong>Land</strong>
+  METHODS get_full_address RETURNING VALUE(re_full_address) TYPE string.
+
+ENDINTERFACE.

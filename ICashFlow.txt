@@ -1,0 +1,18 @@
+"! Allgemeine Bewegungsdaten - ICashFlow
+INTERFACE <replace>_if_cf_general
+  PUBLIC.
+
+  "! aktuelles Bestandsdatum
+  "! @parameter re_date |
+  METHODS get_business_date RETURNING VALUE(re_date) TYPE dats.
+  "! Betrag
+  "! @parameter re_amount |
+  METHODS get_amount        RETURNING VALUE(re_amount) TYPE d.
+  "! Bewegungstyp
+  "! @parameter re_type |
+  METHODS get_type          RETURNING VALUE(re_type) TYPE char5.
+  "! Bewegungstyp
+  "! @parameter re_cf_id |
+  METHODS get_id            RETURNING VALUE(re_cf_id) TYPE char15.
+
+ENDINTERFACE.

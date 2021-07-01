@@ -1,0 +1,56 @@
+"! Bewegungen - CashFlow
+CLASS <replace>_cl_cashflow DEFINITION
+  PUBLIC
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES <replace>_if_cf_general.
+
+    METHODS constructor
+      IMPORTING
+        im_business_date TYPE dats
+        im_id_cf         TYPE char15
+        im_amount        TYPE d
+        im_cf_type       TYPE char5.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    "! aktuelles Bestandsdatum
+    DATA _business_date TYPE dats.
+    "! Bewegungs ID
+    DATA _id_cf(15)     TYPE c.
+    "! Betrag
+    DATA _amount        TYPE d.
+    "! Bewegungstyp
+    DATA _cf_type(5)    TYPE c.
+
+ENDCLASS.
+
+CLASS <replace>_cl_cashflow IMPLEMENTATION.
+
+  METHOD constructor.
+
+    me->_business_date = im_business_date.
+    me->_id_cf         = im_id_cf.
+    me->_amount        = im_amount.
+    me->_cf_type       = im_cf_type.
+
+  ENDMETHOD.
+
+  METHOD <replace>_if_cf_general~get_amount.
+    re_amount = me->_amount.
+  ENDMETHOD.
+
+  METHOD <replace>_if_cf_general~get_business_date.
+    re_date = me->_business_date.
+  ENDMETHOD.
+
+  METHOD <replace>_if_cf_general~get_id.
+    re_cf_id = me->_id_cf.
+  ENDMETHOD.
+
+  METHOD <replace>_if_cf_general~get_type.
+    re_type = me->_cf_type.
+  ENDMETHOD.
+
+ENDCLASS.
