@@ -13,10 +13,10 @@ CLASS <replace>_cl_cashflow DEFINITION
 
     METHODS constructor
       IMPORTING
-        im_business_date TYPE dats
-        im_id_cf         TYPE char15
-        im_amount        TYPE f
-        im_cf_type       TYPE char5.
+        im_business_date TYPE dats	OPTIONAL
+        im_id_cf         TYPE char15    OPTIONAL
+        im_amount        TYPE f         OPTIONAL
+        im_cf_type       TYPE char5     OPTIONAL.
 
   PROTECTED SECTION.
   PRIVATE SECTION.
