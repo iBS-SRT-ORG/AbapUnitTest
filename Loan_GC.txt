@@ -25,9 +25,9 @@ CLASS <replace>_cl_loan DEFINITION
                 im_bp_id            TYPE char10
                 im_obj_bp           TYPE REF TO <replace>_if_bp_general
                 im_company_code     TYPE char4
-                im_porduct_category TYPE n
+                im_porduct_category TYPE char3
                 im_product_type     TYPE numc3
-                im_amount           TYPE d
+                im_amount           TYPE f
       RAISING   cx_static_check.
 
     "! Fügt Cash Flows zum Darlehen
@@ -40,7 +40,7 @@ CLASS <replace>_cl_loan DEFINITION
     "! @parameter re_sum_amount | Summe aller Beträge
     METHODS get_cf_sum_by_date
       IMPORTING im_date              TYPE dats
-      RETURNING VALUE(re_sum_amount) TYPE d.
+      RETURNING VALUE(re_sum_amount) TYPE f.
 
     "! Summe aller CashFlow Beträge die zum Typ <strong>im_type</strong>
     "! passen.
@@ -48,7 +48,7 @@ CLASS <replace>_cl_loan DEFINITION
     "! @parameter re_sum_amount | Summe aller Beträge
     METHODS get_cf_sum_by_type
       IMPORTING im_type              TYPE char5
-      RETURNING VALUE(re_sum_amount) TYPE d.
+      RETURNING VALUE(re_sum_amount) TYPE f.
 
   PROTECTED SECTION.
   PRIVATE SECTION.
@@ -63,11 +63,11 @@ CLASS <replace>_cl_loan DEFINITION
     "! Buchungskreis (BUKRS)
     DATA _company_code(4) TYPE c.
     "! Anlageform (SANLF)
-    DATA _porduct_category(3) TYPE n.
+    DATA _porduct_category(3) TYPE c.
     "! Produktart (GSART)
     DATA _product_type(3) TYPE c.
     "! Vertragskapital
-    DATA _amount TYPE d.
+    DATA _amount TYPE f.
 
     "! Prüft ob die ID im <strong>im_obj_bp</strong> mit der ID im <strong>im_bp_id</strong>
     "! übereinstimmt. Wenn nicht wir die Ausnahme <strong><em>bp_not_valid</em></strong>

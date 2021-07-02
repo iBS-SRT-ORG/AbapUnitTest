@@ -1,0 +1,228 @@
+CLASS ltcl_loan_aut DEFINITION FINAL FOR TESTING
+  DURATION SHORT
+  RISK LEVEL HARMLESS.
+
+  PRIVATE SECTION.
+
+    "! Positiv test: <strong>gültiges</strong> Partnerobjekt
+    "! Kompositions-Beziehung zum Partner. Darlehen darf ohne Parner nicht existieren
+    "! @raising cx_static_check |
+    METHODS komposition_positive FOR TESTING RAISING cx_static_check.
+    "! Negativ test: <strong>ungültiges</strong> Partnerobjekt
+    "! Kompositions-Beziehung zum Partner. Darlehen darf ohne Parner nicht existieren
+    "! @raising cx_static_check |
+    METHODS komposition_negative FOR TESTING RAISING cx_static_check.
+
+    METHODS get_cf_sum_by_date_positive FOR TESTING RAISING cx_static_check.
+    METHODS get_cf_sum_by_type_positive FOR TESTING RAISING cx_static_check.
+
+    METHODS add_obj_cf FOR TESTING RAISING cx_static_check.
+
+    METHODS setup.
+    METHODS teardown.
+
+    CLASS-METHODS class_setup.
+    CLASS-METHODS class_teardown.
+
+ENDCLASS.
+
+CLASS <replace>_cl_loan DEFINITION LOCAL FRIENDS ltcl_loan_aut.
+
+CLASS ltcl_loan_aut IMPLEMENTATION.
+
+  METHOD komposition_positive.
+
+    "+--------------------------+
+    " GIVEN:
+    "+--------------------------+
+    " ein gültiges Partner objekt
+    " JA - eine feste Koplung zum Partner - im nächsten Worksop komme Factories und Testdoubles dazu
+    DATA(obj_bp) = NEW <replace>_cl_business_partner( im_id_business_partner = 'VALID_BP' ).
+
+    "+--------------------------+
+    " WHEN:
+    "+--------------------------+
+    " im Konstrktor wird entschiden ob der Partner zur ID passt.
+    " PASST
+    TRY.
+        DATA(obj_cut) = NEW <replace>_cl_loan( im_business_date    = VALUE #( )
+                                          im_contract_number  = VALUE #( )
+                                          im_bp_id            = 'VALID_BP'
+                                          im_obj_bp           = obj_bp
+                                          im_company_code     = VALUE #( )
+                                          im_porduct_category = VALUE #( )
+                                          im_product_type     = VALUE #( )
+                                          im_amount           = VALUE #( )
+        ).
+      CATCH cx_static_check INTO DATA(obj_cx). " Ausnahmen mit statischer und dynamischer Prüfung von RAISING
+    ENDTRY.
+    "+--------------------------+
+    " THEN:
+    "+--------------------------+
+    " Loan-Objekt soll erzeugt werden
+    cl_abap_unit_assert=>assert_bound( EXPORTING act = obj_cut ).
+    " kein Ausnahme-Objekt
+    cl_abap_unit_assert=>assert_not_bound( EXPORTING act = obj_cx ).
+
+  ENDMETHOD.
+
+  METHOD komposition_negative.
+    " im Konstrktor wird entschiden ob der Partner zur ID passt.
+    " PASST NICHT
+    TRY.
+        "Code/Class Under Test - CUT
+        cl_abap_unit_assert=>assert_bound( NEW <replace>_cl_loan( im_business_date    = VALUE #( )
+                                                             im_contract_number  = VALUE #( )
+                                                             im_bp_id            = 'VALID_BP'
+                                                             im_obj_bp           = NEW <replace>_cl_business_partner( im_id_business_partner = 'NOTVALIDBP' )
+                                                             im_company_code     = VALUE #( )
+                                                             im_porduct_category = VALUE #( )
+                                                             im_product_type     = VALUE #( )
+                                                             im_amount           = VALUE #( ) ) ).
+      CATCH cx_static_check INTO DATA(obj_cx). " Ausnahmen mit statischer und dynamischer Prüfung von RAISING
+    ENDTRY.
+    "+--------------------------+
+    " THEN:
+    "+--------------------------+
+    " Ausnahme-Objekt soll erzeugt werden
+    cl_abap_unit_assert=>assert_bound( obj_cx ).
+
+  ENDMETHOD.
+
+  METHOD get_cf_sum_by_date_positive.
+    "+--------------------------+
+    " GIVEN:
+    "+--------------------------+
+    " CF
+    DATA(obj_cf_1) = NEW <replace>_cl_cashflow( im_business_date = '19860329'
+                                           im_amount        = 200 ).
+    DATA(obj_cf_2) = NEW <replace>_cl_cashflow( im_business_date = '19860627'
+                                           im_amount        = 100 ).
+    DATA(obj_cf_3) = NEW <replace>_cl_cashflow( im_business_date = '19860329'
+                                           im_amount        = 500 ).
+    DATA(obj_cf_4) = NEW <replace>_cl_cashflow( im_business_date = '19860627'
+                                           im_amount        = 700 ).
+    DATA(obj_cf_5) = NEW <replace>_cl_cashflow( im_business_date = '19860329'
+                                           im_amount        = 250 ).
+    " CUT Instanz
+    DATA(obj_cut) = NEW <replace>_cl_loan( im_business_date    = VALUE #( )
+                                      im_contract_number  = VALUE #( )
+                                      im_bp_id            = 'VALID_BP'
+                                      im_obj_bp           = NEW <replace>_cl_business_partner( im_id_business_partner = 'VALID_BP' )
+                                      im_company_code     = VALUE #( )
+                                      im_porduct_category = VALUE #( )
+                                      im_product_type     = VALUE #( )
+                                      im_amount           = VALUE #( ) ).
+    " Dependent ON Komponenten hinzufügen
+    obj_cut->add_obj_cf( obj_cf_1 ).
+    obj_cut->add_obj_cf( obj_cf_2 ).
+    obj_cut->add_obj_cf( obj_cf_3 ).
+    obj_cut->add_obj_cf( obj_cf_4 ). " über Mehotde
+    APPEND obj_cf_5 TO obj_cut->_tab_cashflows. " oder direkt ich bin ja lokal Friend
+
+    "+--------------------------+
+    " WHEN:
+    "+--------------------------+
+    " summe aller CF mit dem super/duper Datum '19860329'
+    DATA(sum) = obj_cut->get_cf_sum_by_date( '19860329' ).
+
+    "+--------------------------+
+    " THEN:
+    "+--------------------------+
+    cl_abap_unit_assert=>assert_equals_float( act = sum
+                                             " exp = '950.1' ).
+                                              exp = 950 ).
+  ENDMETHOD.
+
+  METHOD get_cf_sum_by_type_positive.
+    "+--------------------------+
+    " GIVEN:
+    "+--------------------------+
+    " CF
+    DATA(obj_cf_1) = NEW <replace>_cl_cashflow( im_cf_type = 'TYPE2'
+                                           im_amount  = 200 ).
+    DATA(obj_cf_2) = NEW <replace>_cl_cashflow( im_cf_type = 'TYPE1'
+                                           im_amount  = 100 ).
+    DATA(obj_cf_3) = NEW <replace>_cl_cashflow( im_cf_type = 'TYPE1'
+                                           im_amount  = 500 ).
+    DATA(obj_cf_4) = NEW <replace>_cl_cashflow( im_cf_type = 'TYPE2'
+                                           im_amount  = 700 ).
+    DATA(obj_cf_5) = NEW <replace>_cl_cashflow( im_cf_type = 'TYPE1'
+                                           im_amount  = 250 ).
+    " CUT Instanz
+    DATA(obj_cut) = NEW <replace>_cl_loan( im_business_date    = VALUE #( )
+                                      im_contract_number  = VALUE #( )
+                                      im_bp_id            = 'VALID_BP'
+                                      im_obj_bp           = NEW <replace>_cl_business_partner( im_id_business_partner = 'VALID_BP' )
+                                      im_company_code     = VALUE #( )
+                                      im_porduct_category = VALUE #( )
+                                      im_product_type     = VALUE #( )
+                                      im_amount           = VALUE #( ) ).
+    " Dependent ON Komponenten hinzufügen
+    obj_cut->add_obj_cf( obj_cf_1 ).
+    obj_cut->add_obj_cf( obj_cf_2 ).
+    obj_cut->add_obj_cf( obj_cf_3 ).
+    obj_cut->add_obj_cf( obj_cf_4 ). " über Mehotde
+    APPEND obj_cf_5 TO obj_cut->_tab_cashflows. " oder direkt ich bin ja lokal Friend
+
+    "+--------------------------+
+    " WHEN:
+    "+--------------------------+
+    " summe aller CF mit dem CashFlow Type = 'TYPE2'
+    DATA(sum) = obj_cut->get_cf_sum_by_type( 'TYPE2' ).
+
+    "+--------------------------+
+    " THEN:
+    "+--------------------------+
+    cl_abap_unit_assert=>assert_equals_float( act = sum
+                                             " exp = '950.1' ).
+                                              exp = 900 ).
+  ENDMETHOD.
+
+  METHOD add_obj_cf.
+
+    "+--------------------------+
+    " GIVEN:
+    "+--------------------------+
+    DATA(obj_loan) = NEW <replace>_cl_loan( im_business_date    = VALUE #( )
+                                       im_contract_number  = VALUE #( )
+                                       im_bp_id            = 'VALID_BP'
+                                       im_obj_bp           = NEW <replace>_cl_business_partner( im_id_business_partner = 'VALID_BP' )
+                                       im_company_code     = VALUE #( )
+                                       im_porduct_category = VALUE #( )
+                                       im_product_type     = VALUE #( )
+                                       im_amount           = VALUE #( ) ).
+    "+--------------------------+
+    " WHEN:
+    "+--------------------------+
+    " ich 6 neue CF Objektre erzeuge und diese an die Loan Instanz übergebe
+    DO 5 TIMES.
+      obj_loan->add_obj_cf( NEW <replace>_cl_cashflow( ) ).
+    ENDDO.
+
+    "+--------------------------+
+    " THEN:
+    "+--------------------------+
+    " Privates Attribut Prüfen (geht nur über eine Local Friends Beziehung)
+    cl_abap_unit_assert=>assert_equals( act = lines( obj_loan->_tab_cashflows )
+                                        exp = 5 ).
+
+  ENDMETHOD.
+
+  METHOD class_setup.
+    " 1. mal ganz am Anfang
+  ENDMETHOD.
+
+  METHOD class_teardown.
+    " X. Mal vor jedem Testcase  (X = anzahl_der_testmethoden)
+  ENDMETHOD.
+
+  METHOD setup.
+    " X. Mal vor jedem Testcase (X = anzahl_der_testmethoden)
+  ENDMETHOD.
+
+  METHOD teardown.
+    " 1. mal ganz am Ende
+  ENDMETHOD.
+
+ENDCLASS.
