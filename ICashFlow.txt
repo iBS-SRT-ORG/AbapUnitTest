@@ -7,7 +7,7 @@ INTERFACE <replace>_if_cf_general
   METHODS get_business_date RETURNING VALUE(re_date) TYPE dats.
   "! Betrag
   "! @parameter re_amount |
-  METHODS get_amount        RETURNING VALUE(re_amount) TYPE d.
+  METHODS get_amount        RETURNING VALUE(re_amount) TYPE f.
   "! Bewegungstyp
   "! @parameter re_type |
   METHODS get_type          RETURNING VALUE(re_type) TYPE char5.

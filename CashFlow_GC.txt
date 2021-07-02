@@ -6,11 +6,16 @@ CLASS <replace>_cl_cashflow DEFINITION
   PUBLIC SECTION.
     INTERFACES <replace>_if_cf_general.
 
+    ALIASES get_amount        FOR <replace>_if_cf_general~get_amount.
+    ALIASES get_business_date FOR <replace>_if_cf_general~get_business_date.
+    ALIASES get_id            FOR <replace>_if_cf_general~get_id.
+    ALIASES get_type          FOR <replace>_if_cf_general~get_type.
+
     METHODS constructor
       IMPORTING
         im_business_date TYPE dats
         im_id_cf         TYPE char15
-        im_amount        TYPE d
+        im_amount        TYPE f
         im_cf_type       TYPE char5.
 
   PROTECTED SECTION.
@@ -20,7 +25,7 @@ CLASS <replace>_cl_cashflow DEFINITION
     "! Bewegungs ID
     DATA _id_cf(15)     TYPE c.
     "! Betrag
-    DATA _amount        TYPE d.
+    DATA _amount        TYPE f.
     "! Bewegungstyp
     DATA _cf_type(5)    TYPE c.
 
