@@ -1,85 +1,102 @@
-CLASS ltcl_cashflow_aut_ DEFINITION FINAL FOR TESTING
+CLASS lcl_cashflow_aut DEFINITION FINAL FOR TESTING
   DURATION SHORT
   RISK LEVEL HARMLESS.
 
   PRIVATE SECTION.
-
     METHODS get_amount FOR TESTING RAISING cx_static_check.
     METHODS get_business_date FOR TESTING RAISING cx_static_check.
     METHODS get_id FOR TESTING RAISING cx_static_check.
-    METHODS get_get_type FOR TESTING RAISING cx_static_check.
-    "! Erzeugt immer ein neuen CUT Objekt und Ruft ASSERT_EQ auf und prüft CashFlow IDs
-    METHODS get_id_helper IMPORTING im_id_cf TYPE char15.
+    "! <strong>Hilfsmethode</strong> ASSERT EQ für get_id
+    "! @parameter im_id | CashFlow ID für AUT
+    METHODS get_id_helper IMPORTING im_id TYPE char15.
+
+    METHODS setup.
+    METHODS teardown.
+
+    CLASS-METHODS class_setup.
+    CLASS-METHODS class_teardown.
 
 ENDCLASS.
 
 
-CLASS ltcl_cashflow_aut_ IMPLEMENTATION.
+CLASS lcl_cashflow_aut IMPLEMENTATION.
 
   METHOD get_amount.
 
     "+--------------------------+
     " GIVEN:
     "+--------------------------+
-    DATA(obj_cut) = NEW <replace>_cl_cashflow( im_amount = '300.01'
+    DATA(obj_cut) = NEW zyll_cl_cashflow( im_amount = '200.01'
                                           im_business_date = VALUE #( )
                                           im_cf_type       = VALUE #( )
                                           im_id_cf         = VALUE #( ) ).
     "+--------------------------+
     " WHEN:
     "+--------------------------+
-    " was Test ich
-    DATA(act) = obj_cut->get_amount( ).
+    DATA(act_amount) = obj_cut->get_amount( ).
 
     "+--------------------------+
     " THEN:
     "+--------------------------+
-    " welche Ergebnise erwarte ich
     cl_abap_unit_assert=>assert_equals_float(
       EXPORTING
-        act              = act
-        exp              = '300.01' ).
+        act              = act_amount
+        exp              = '200.01'
+    ).
 
   ENDMETHOD.
 
   METHOD get_business_date.
-    " hier nochmal alles, nur ein wenig kompakt - es muss ja nicht immer Given/When/Then sein
+
     cl_abap_unit_assert=>assert_equals(
       EXPORTING
-        act = NEW <replace>_cl_cashflow( im_amount = VALUE #( )
-                                    im_business_date = '19860329'
-                                    im_cf_type       = VALUE #( )
-                                    im_id_cf         = VALUE #( ) )->get_business_date( )
-        exp = '19860329' ).
-
-  ENDMETHOD.
-
-  METHOD get_get_type.
-    " noch weniger :o)
-    cl_abap_unit_assert=>assert_equals( act = NEW <replace>_cl_cashflow( im_amount        = VALUE #( )
-                                                                    im_business_date = VALUE #( )
-                                                                    im_cf_type       = 'CFTY1'
-                                                                    im_id_cf         = VALUE #( ) )->get_type( )
-                                        exp = 'CFTY1' ).
+        act              = NEW zyll_cl_cashflow( im_amount = VALUE #( )
+                                          im_business_date = '19860329'
+                                          im_cf_type       = VALUE #( )
+                                          im_id_cf         = VALUE #( ) )->get_business_date( )
+        exp              = '19860329'
+    ).
   ENDMETHOD.
 
   METHOD get_id.
-    " refactoring kann doch auch in Unit tests kommen mit lokalen Helper-Methoden
-    " so kann ich mehrere CUT Objekte erstellen und mehr Werte Prüfen
-    get_id_helper( 'ID_1' ). " neues CUT Objekt
-    get_id_helper( 'ID_2' ). " neues CUT Objekt
-    get_id_helper( 'ID_3' ). " neues CUT Objekt
-    get_id_helper( 'ID_4' ). " neues CUT Objekt
-    get_id_helper( 'ID_5' ). " neues CUT Objekt
+
+    get_id_helper( 'CFID_AUT_1' ).
+    get_id_helper( 'CFID_AUT_2' ).
+    get_id_helper( 'CFID_AUT_3' ).
+    get_id_helper( 'CFID_AUT_4' ).
+    get_id_helper( 'CFID_AUT_5' ).
 
   ENDMETHOD.
 
   METHOD get_id_helper.
-    cl_abap_unit_assert=>assert_equals( act = NEW <replace>_cl_cashflow( im_amount        = VALUE #( )
-                                                                    im_business_date = VALUE #( )
-                                                                    im_cf_type       = VALUE #( )
-                                                                    im_id_cf         = im_id_cf )->get_id( )
-                                    exp = im_id_cf ).
+
+    cl_abap_unit_assert=>assert_equals(
+      EXPORTING
+        act              = NEW zyll_cl_cashflow( im_amount = VALUE #( )
+                                          im_business_date = VALUE #( )
+                                          im_cf_type       = VALUE #( )
+                                          im_id_cf         = im_id )->get_id( )
+        exp              = im_id
+    ).
+
+  ENDMETHOD.
+
+
+
+  METHOD class_setup.
+    SKIP.
+  ENDMETHOD.
+
+  METHOD class_teardown.
+    SKIP.
+  ENDMETHOD.
+
+  METHOD setup.
+    SKIP.
+  ENDMETHOD.
+
+  METHOD teardown.
+    SKIP.
   ENDMETHOD.
 
 ENDCLASS.

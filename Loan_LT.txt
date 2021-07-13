@@ -1,0 +1,22 @@
+*"* use this source file for the definition and implementation of
+*"* local helper classes, interface definitions and type
+*"* declarations
+
+CLASS lcl_bp_td_positive IMPLEMENTATION.
+
+  METHOD zyll_if_bp_general~get_bp_id.
+    re_bp_id = 'VALID_BP'.
+  ENDMETHOD.
+
+ENDCLASS.
+
+CLASS lcl_bp_td_negative IMPLEMENTATION.
+
+  METHOD zyll_if_bp_general~get_bp_id.
+    re_bp_id = 'NOTVALIDBP'.
+  ENDMETHOD.
+
+ENDCLASS.
+
+CLASS lcl_cf_dummy IMPLEMENTATION.
+ENDCLASS.

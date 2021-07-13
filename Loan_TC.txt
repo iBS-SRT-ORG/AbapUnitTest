@@ -8,7 +8,7 @@ CLASS ltcl_loan_aut DEFINITION FINAL FOR TESTING
     "! Kompositions-Beziehung zum Partner. Darlehen darf ohne Parner nicht existieren
     "! @raising cx_static_check |
     METHODS komposition_positive FOR TESTING RAISING cx_static_check.
-    "! Negativ test: <strong>ungültiges</strong> Partnerobjekt
+    "! Negativ test: <strong>ungültigns</strong> Partnerobjekt
     "! Kompositions-Beziehung zum Partner. Darlehen darf ohne Parner nicht existieren
     "! @raising cx_static_check |
     METHODS komposition_negative FOR TESTING RAISING cx_static_check.
@@ -26,7 +26,7 @@ CLASS ltcl_loan_aut DEFINITION FINAL FOR TESTING
 
 ENDCLASS.
 
-CLASS <replace>_cl_loan DEFINITION LOCAL FRIENDS ltcl_loan_aut.
+CLASS zyll_cl_loan DEFINITION LOCAL FRIENDS ltcl_loan_aut.
 
 CLASS ltcl_loan_aut IMPLEMENTATION.
 
@@ -36,8 +36,8 @@ CLASS ltcl_loan_aut IMPLEMENTATION.
     " GIVEN:
     "+--------------------------+
     " ein gültiges Partner objekt
-    " JA - eine feste Koplung zum Partner - im nächsten Worksop komme Factories und Testdoubles dazu
-    DATA(obj_bp) = NEW <replace>_cl_business_partner( im_id_business_partner = 'VALID_BP' ).
+    " lokales Testdoubles erzeugen
+    DATA(obj_bp) = NEW lcl_bp_td_positive( ).
 
     "+--------------------------+
     " WHEN:
@@ -45,7 +45,7 @@ CLASS ltcl_loan_aut IMPLEMENTATION.
     " im Konstrktor wird entschiden ob der Partner zur ID passt.
     " PASST
     TRY.
-        DATA(obj_cut) = NEW <replace>_cl_loan( im_business_date    = VALUE #( )
+        DATA(obj_cut) = NEW zyll_cl_loan( im_business_date    = VALUE #( )
                                           im_contract_number  = VALUE #( )
                                           im_bp_id            = 'VALID_BP'
                                           im_obj_bp           = obj_bp
@@ -71,10 +71,10 @@ CLASS ltcl_loan_aut IMPLEMENTATION.
     " PASST NICHT
     TRY.
         "Code/Class Under Test - CUT
-        cl_abap_unit_assert=>assert_bound( NEW <replace>_cl_loan( im_business_date    = VALUE #( )
+        cl_abap_unit_assert=>assert_bound( NEW zyll_cl_loan( im_business_date    = VALUE #( )
                                                              im_contract_number  = VALUE #( )
                                                              im_bp_id            = 'VALID_BP'
-                                                             im_obj_bp           = NEW <replace>_cl_business_partner( im_id_business_partner = 'NOTVALIDBP' )
+                                                             im_obj_bp           = NEW lcl_bp_td_negative( )
                                                              im_company_code     = VALUE #( )
                                                              im_porduct_category = VALUE #( )
                                                              im_product_type     = VALUE #( )
@@ -94,21 +94,21 @@ CLASS ltcl_loan_aut IMPLEMENTATION.
     " GIVEN:
     "+--------------------------+
     " CF
-    DATA(obj_cf_1) = NEW <replace>_cl_cashflow( im_business_date = '19860329'
+    DATA(obj_cf_1) = NEW zyll_cl_cashflow( im_business_date = '19860329'
                                            im_amount        = 200 ).
-    DATA(obj_cf_2) = NEW <replace>_cl_cashflow( im_business_date = '19860627'
+    DATA(obj_cf_2) = NEW zyll_cl_cashflow( im_business_date = '19860627'
                                            im_amount        = 100 ).
-    DATA(obj_cf_3) = NEW <replace>_cl_cashflow( im_business_date = '19860329'
+    DATA(obj_cf_3) = NEW zyll_cl_cashflow( im_business_date = '19860329'
                                            im_amount        = 500 ).
-    DATA(obj_cf_4) = NEW <replace>_cl_cashflow( im_business_date = '19860627'
+    DATA(obj_cf_4) = NEW zyll_cl_cashflow( im_business_date = '19860627'
                                            im_amount        = 700 ).
-    DATA(obj_cf_5) = NEW <replace>_cl_cashflow( im_business_date = '19860329'
+    DATA(obj_cf_5) = NEW zyll_cl_cashflow( im_business_date = '19860329'
                                            im_amount        = 250 ).
     " CUT Instanz
-    DATA(obj_cut) = NEW <replace>_cl_loan( im_business_date    = VALUE #( )
+    DATA(obj_cut) = NEW zyll_cl_loan( im_business_date    = VALUE #( )
                                       im_contract_number  = VALUE #( )
                                       im_bp_id            = 'VALID_BP'
-                                      im_obj_bp           = NEW <replace>_cl_business_partner( im_id_business_partner = 'VALID_BP' )
+                                      im_obj_bp           = NEW zyll_cl_business_partner( im_id_business_partner = 'VALID_BP' )
                                       im_company_code     = VALUE #( )
                                       im_porduct_category = VALUE #( )
                                       im_product_type     = VALUE #( )
@@ -139,21 +139,21 @@ CLASS ltcl_loan_aut IMPLEMENTATION.
     " GIVEN:
     "+--------------------------+
     " CF
-    DATA(obj_cf_1) = NEW <replace>_cl_cashflow( im_cf_type = 'TYPE2'
+    DATA(obj_cf_1) = NEW zyll_cl_cashflow( im_cf_type = 'TYPE2'
                                            im_amount  = 200 ).
-    DATA(obj_cf_2) = NEW <replace>_cl_cashflow( im_cf_type = 'TYPE1'
+    DATA(obj_cf_2) = NEW zyll_cl_cashflow( im_cf_type = 'TYPE1'
                                            im_amount  = 100 ).
-    DATA(obj_cf_3) = NEW <replace>_cl_cashflow( im_cf_type = 'TYPE1'
+    DATA(obj_cf_3) = NEW zyll_cl_cashflow( im_cf_type = 'TYPE1'
                                            im_amount  = 500 ).
-    DATA(obj_cf_4) = NEW <replace>_cl_cashflow( im_cf_type = 'TYPE2'
+    DATA(obj_cf_4) = NEW zyll_cl_cashflow( im_cf_type = 'TYPE2'
                                            im_amount  = 700 ).
-    DATA(obj_cf_5) = NEW <replace>_cl_cashflow( im_cf_type = 'TYPE1'
+    DATA(obj_cf_5) = NEW zyll_cl_cashflow( im_cf_type = 'TYPE1'
                                            im_amount  = 250 ).
     " CUT Instanz
-    DATA(obj_cut) = NEW <replace>_cl_loan( im_business_date    = VALUE #( )
+    DATA(obj_cut) = NEW zyll_cl_loan( im_business_date    = VALUE #( )
                                       im_contract_number  = VALUE #( )
                                       im_bp_id            = 'VALID_BP'
-                                      im_obj_bp           = NEW <replace>_cl_business_partner( im_id_business_partner = 'VALID_BP' )
+                                      im_obj_bp           = NEW zyll_cl_business_partner( im_id_business_partner = 'VALID_BP' )
                                       im_company_code     = VALUE #( )
                                       im_porduct_category = VALUE #( )
                                       im_product_type     = VALUE #( )
@@ -184,10 +184,10 @@ CLASS ltcl_loan_aut IMPLEMENTATION.
     "+--------------------------+
     " GIVEN:
     "+--------------------------+
-    DATA(obj_loan) = NEW <replace>_cl_loan( im_business_date    = VALUE #( )
+    DATA(obj_loan) = NEW zyll_cl_loan( im_business_date    = VALUE #( )
                                        im_contract_number  = VALUE #( )
                                        im_bp_id            = 'VALID_BP'
-                                       im_obj_bp           = NEW <replace>_cl_business_partner( im_id_business_partner = 'VALID_BP' )
+                                       im_obj_bp           = NEW lcl_bp_td_positive( )
                                        im_company_code     = VALUE #( )
                                        im_porduct_category = VALUE #( )
                                        im_product_type     = VALUE #( )
@@ -197,7 +197,7 @@ CLASS ltcl_loan_aut IMPLEMENTATION.
     "+--------------------------+
     " ich 6 neue CF Objektre erzeuge und diese an die Loan Instanz übergebe
     DO 5 TIMES.
-      obj_loan->add_obj_cf( NEW <replace>_cl_cashflow( ) ).
+      obj_loan->add_obj_cf( NEW lcl_cf_dummy( ) ).
     ENDDO.
 
     "+--------------------------+

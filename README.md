@@ -5,7 +5,7 @@ ABAP Unit Tests : [iBS Workshop](https://www.ibs-banking.com/de/)
 # aktive Branches
 
 * rookie - ***Workshop 1*** : Grundlagen / Einführung ABAP Unit Tests 
-* pro - ***Workshop 2*** : lokale Test Doubles / ABAP Unit Test Double Framework
+* pro - ***Workshop 2*** :  Test Isolation / lokale Test Doubles / ABAP Unit Test Double Framework
 * expert - ***Workshop 3*** : mal sehen :o)
 
 # Testszenario
