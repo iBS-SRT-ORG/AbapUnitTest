@@ -108,7 +108,7 @@ CLASS ltcl_loan_aut IMPLEMENTATION.
     DATA(obj_cut) = NEW zyll_cl_loan( im_business_date    = VALUE #( )
                                       im_contract_number  = VALUE #( )
                                       im_bp_id            = 'VALID_BP'
-                                      im_obj_bp           = NEW zyll_cl_business_partner( im_id_business_partner = 'VALID_BP' )
+                                      im_obj_bp           = NEW lcl_bp_td_positive( )
                                       im_company_code     = VALUE #( )
                                       im_porduct_category = VALUE #( )
                                       im_product_type     = VALUE #( )
@@ -153,7 +153,7 @@ CLASS ltcl_loan_aut IMPLEMENTATION.
     DATA(obj_cut) = NEW zyll_cl_loan( im_business_date    = VALUE #( )
                                       im_contract_number  = VALUE #( )
                                       im_bp_id            = 'VALID_BP'
-                                      im_obj_bp           = NEW zyll_cl_business_partner( im_id_business_partner = 'VALID_BP' )
+                                      im_obj_bp           = NEW lcl_bp_td_positive( )
                                       im_company_code     = VALUE #( )
                                       im_porduct_category = VALUE #( )
                                       im_product_type     = VALUE #( )
